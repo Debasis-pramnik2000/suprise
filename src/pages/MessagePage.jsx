@@ -19,7 +19,7 @@ function MessagePage({
   const [open, setOpen] = useState(false);
 
   const message =
-    "I hope this new year of your life brings you countless reasons to smile, beautiful memories, amazing adventures and all the happiness your heart can hold.";
+    " Finally the birthday arrived. I pray this birthday feels your life with happiness and full of joy.wishing a very very happy birthday  debaprita. 🎉🎉 🤍";
 
   const [text, setText] = useState("");
 
