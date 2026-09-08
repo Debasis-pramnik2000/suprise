@@ -17,7 +17,7 @@ import Navigation from "../components/Navigation";
 const lyrics = [
   "Happy", "Birthday", "to", "You",
   "Happy", "Birthday", "to", "You",
-  "Happy", "Birthday", "Dear", "Bipasa",
+  "Happy", "Birthday", "Dear", "Debaprita",
   "Happy", "Birthday", "to", "You!",
   "🎉", "🎂", "🎁", "🎈"
 ];
