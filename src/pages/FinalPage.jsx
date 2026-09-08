@@ -15,14 +15,47 @@ function FinalPage({
   previousPage,
 }) {
   const canvasRef = useRef(null);
+  const audioRef = useRef(null);
 
+  // ====== BACKGROUND MUSIC ======
   useEffect(() => {
-    const canvas = canvasRef.current;
+    // Create audio element
+    const audio = new Audio();
+    
+    // Use your music file
+    audio.src = '/music/hello.mp3';
+    
+    // Settings
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.autoplay = true;
+    
+    // Store reference
+    audioRef.current = audio;
 
+    // Try to play
+    const playMusic = async () => {
+      try {
+        await audio.play();
+        console.log('🎵 Background music playing');
+      } catch (error) {
+        console.log('Autoplay blocked. User interaction needed.');
+        // Try again on user click
+        const playOnClick = () => {
+          audio.play().catch(e => console.log('Still blocked'));
+          document.removeEventListener('click', playOnClick);
+        };
+        document.addEventListener('click', playOnClick);
+      }
+    };
+
+    playMusic();
+
+    // ====== FIREWORKS CANVAS ======
+    const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-
     let animationFrame;
 
     const resize = () => {
@@ -31,79 +64,39 @@ function FinalPage({
     };
 
     resize();
-
-    window.addEventListener(
-      "resize",
-      resize
-    );
+    window.addEventListener("resize", resize);
 
     const fireworks = [];
     const particles = [];
 
     class Firework {
       constructor() {
-        this.x =
-          Math.random() * canvas.width;
-
-        this.y =
-          canvas.height;
-
-        this.targetX =
-          Math.random() *
-            canvas.width *
-            0.8 +
-          canvas.width * 0.1;
-
-        this.targetY =
-          Math.random() *
-            canvas.height *
-            0.45 +
-          canvas.height * 0.1;
-
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height;
+        this.targetX = Math.random() * canvas.width * 0.8 + canvas.width * 0.1;
+        this.targetY = Math.random() * canvas.height * 0.45 + canvas.height * 0.1;
         this.speed = 7;
         this.done = false;
       }
 
       update() {
-        const dx =
-          this.targetX - this.x;
-
-        const dy =
-          this.targetY - this.y;
-
+        const dx = this.targetX - this.x;
+        const dy = this.targetY - this.y;
         this.x += dx * 0.035;
         this.y += dy * 0.035;
 
-        if (
-          Math.abs(dx) < 5 &&
-          Math.abs(dy) < 5
-        ) {
+        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
           this.done = true;
-
           for (let i = 0; i < 70; i++) {
-            particles.push(
-              new Particle(
-                this.x,
-                this.y
-              )
-            );
+            particles.push(new Particle(this.x, this.y));
           }
         }
       }
 
       draw() {
         ctx.beginPath();
-
-        ctx.arc(
-          this.x,
-          this.y,
-          2,
-          0,
-          Math.PI * 2
-        );
-
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
         ctx.fillStyle = "#fff";
-
         ctx.fill();
       }
     }
@@ -112,119 +105,70 @@ function FinalPage({
       constructor(x, y) {
         this.x = x;
         this.y = y;
-
-        const angle =
-          Math.random() *
-          Math.PI *
-          2;
-
-        const speed =
-          Math.random() * 5 + 2;
-
-        this.dx =
-          Math.cos(angle) * speed;
-
-        this.dy =
-          Math.sin(angle) * speed;
-
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5 + 2;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
         this.life = 100;
-
-        this.size =
-          Math.random() * 3 + 1;
-
-        this.hue =
-          Math.random() * 360;
+        this.size = Math.random() * 3 + 1;
+        this.hue = Math.random() * 360;
       }
 
       update() {
         this.x += this.dx;
         this.y += this.dy;
-
         this.dy += 0.04;
-
         this.life -= 1;
       }
 
       draw() {
         ctx.beginPath();
-
-        ctx.arc(
-          this.x,
-          this.y,
-          this.size,
-          0,
-          Math.PI * 2
-        );
-
-        ctx.fillStyle =
-          `hsla(${this.hue},100%,70%,${this.life / 100})`;
-
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue},100%,70%,${this.life / 100})`;
         ctx.fill();
       }
     }
 
     const animate = () => {
-      ctx.fillStyle =
-        "rgba(5, 2, 15, 0.22)";
-
-      ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+      ctx.fillStyle = "rgba(5, 2, 15, 0.22)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       if (Math.random() < 0.045) {
-        fireworks.push(
-          new Firework()
-        );
+        fireworks.push(new Firework());
       }
 
-      fireworks.forEach(
-        (firework, index) => {
-          firework.update();
-          firework.draw();
-
-          if (firework.done) {
-            fireworks.splice(
-              index,
-              1
-            );
-          }
+      fireworks.forEach((firework, index) => {
+        firework.update();
+        firework.draw();
+        if (firework.done) {
+          fireworks.splice(index, 1);
         }
-      );
+      });
 
-      particles.forEach(
-        (particle, index) => {
-          particle.update();
-          particle.draw();
-
-          if (particle.life <= 0) {
-            particles.splice(
-              index,
-              1
-            );
-          }
+      particles.forEach((particle, index) => {
+        particle.update();
+        particle.draw();
+        if (particle.life <= 0) {
+          particles.splice(index, 1);
         }
-      );
+      });
 
-      animationFrame =
-        requestAnimationFrame(
-          animate
-        );
+      animationFrame = requestAnimationFrame(animate);
     };
 
     animate();
 
+    // ====== CLEANUP ======
     return () => {
-      cancelAnimationFrame(
-        animationFrame
-      );
-
-      window.removeEventListener(
-        "resize",
-        resize
-      );
+      // Stop music
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+      
+      // Stop fireworks
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
@@ -250,8 +194,6 @@ function FinalPage({
         >
           <FaHeart />
         </motion.div>
-
-        
 
         <motion.h2
           initial={{
@@ -285,12 +227,10 @@ function FinalPage({
             duration: 0.8,
           }}
         >
-
           <img
             src="/images/dd1.jpg"
             alt="Birthday"
           />
-
         </motion.div>
 
         <motion.p

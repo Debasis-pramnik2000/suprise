@@ -19,7 +19,7 @@ function MessagePage({
   const [open, setOpen] = useState(false);
 
   const message =
-    " Finally the birthday arrived. I pray this birthday feels your life with happiness and full of joy.wishing a very very happy birthday  debaprita. 🎉🎉 🤍";
+    "Finally the birthday arrived. I pray this birthday feels your life with happiness and full of joy.wishing a very very happy birthday  Debaprita🎉🎉 🤍";
 
   const [text, setText] = useState("");
 
@@ -111,7 +111,7 @@ function MessagePage({
             <FaHeart />
           </div>
 
-          <span>Dear DEBAPRITA ,</span>
+          <span>Dear Debaprita,</span>
 
           <p>
             {text}
